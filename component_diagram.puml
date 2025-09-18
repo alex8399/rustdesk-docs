@@ -1,0 +1,16 @@
+@startuml
+
+package "Library Layer" as LibraryLayer {
+  [Screen Capture]
+  [Clipboard]
+}
+
+
+package "Platform Layer" as PlatformLayer {
+  [Windows]
+  [Linux]
+}
+
+[Screen Capture] --> [PlatformLayer]: "use"
+
+@enduml
