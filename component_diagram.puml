@@ -4,22 +4,23 @@
 
 title RustDesk Architecture Component Diagram
 
-package "Frontend (Client Applications)"as Frontend #LightBlue {
+package "Client" as Frontend #LightBlue {
   component "Flutter UI" as FlutterUI <<GUI>>
   () "FFI Interface" as FfiInterface
   component "RustDesk Core" as CoreClient <<Application>>
   component "Web Client" as WebClient <<Browser>>
-  component "port_forward" as PortForward <<Library>>
 
-  CoreClient --|> FfiInterface : provides
+  CoreClient - FfiInterface
   FlutterUI ..> FfiInterface : uses
+  FfiInterface -[hidden]right- CoreClient
 }
 
-package "Backend (Server Infrastructure)" as Backend #LightGreen {
+package "Server" as Backend #LightGreen {
   component "ID/Rendezvous Server (hbbs)" as IDServer <<Application>>
   component "Relay Server (hbbr)" as RelayServer <<Application>>
   IDServer -[hidden]down- RelayServer
 }
+
 
 package "Shared Libraries (libs)" as SharedLibs #Orange {
   component "hbb_common" as HbbCommon <<Library>>
@@ -35,9 +36,12 @@ package "Shared Libraries (libs)" as SharedLibs #Orange {
   component "enigo" as Enigo <<Library>>
   note right of Enigo: Input Simulation (mouse/keyboard)
 
+  component "clipboard" as Clipboard <<Library>>
+  note right of Clipboard: Clipboard Management
 
   HbbCommon -[hidden]down- Enigo
   Enigo -[hidden]down- Scrap
+  Scrap -[hidden]down- Clipboard
 }
 
 package "Platforms" as Platforms #LightGray {
@@ -54,13 +58,14 @@ package "Platforms" as Platforms #LightGray {
 Scrap .> Platforms : "Uses OS APIs"
 Enigo .> Platforms : "Uses OS APIs"
 HbbCommon .> Platforms : "Uses OS APIs"
+Clipboard .> Platforms : "Uses OS APIs"
 
 
 ' Relationships between components
 CoreClient ..> HbbCommon
 CoreClient ..> Scrap
 CoreClient ..> Enigo
-CoreClient ..> PortForward
+CoreClient ..> Clipboard
 
 IDServer ..> HbbCommon
 RelayServer ..> HbbCommon
@@ -68,6 +73,7 @@ RelayServer ..> HbbCommon
 ' Connection Flow
 CoreClient .> IDServer : "Registers & finds peer"
 CoreClient .> RelayServer : "Routes traffic (if P2P fails)"
+
 WebClient .> IDServer : "Registers & finds peer"
 WebClient .> RelayServer : "Routes traffic"
 
