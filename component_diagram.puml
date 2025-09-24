@@ -9,6 +9,7 @@ package "Frontend (Client Applications)"as Frontend #LightBlue {
   () "FFI Interface" as FfiInterface
   component "RustDesk Core" as CoreClient <<Application>>
   component "Web Client" as WebClient <<Browser>>
+  component "port_forward" as PortForward <<Library>>
 
   CoreClient --|> FfiInterface : provides
   FlutterUI ..> FfiInterface : uses
@@ -34,11 +35,9 @@ package "Shared Libraries (libs)" as SharedLibs #Orange {
   component "enigo" as Enigo <<Library>>
   note right of Enigo: Input Simulation (mouse/keyboard)
 
-  component "port_forward" as PortForward <<Library>>
 
   HbbCommon -[hidden]down- Enigo
   Enigo -[hidden]down- Scrap
-  Scrap -[hidden]down- PortForward
 }
 
 package "Platforms" as Platforms #LightGray {
@@ -76,4 +75,3 @@ WebClient .> RelayServer : "Routes traffic"
 CoreClient ..left-> CoreClient : "Direct P2P Connection"
 
 @enduml
-
