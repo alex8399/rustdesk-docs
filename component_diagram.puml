@@ -54,6 +54,22 @@ package "Platforms" as Platforms #LightGray {
   MacOS -[hidden]right- Linux
 }
 
+() "Network" as Network1
+() "Network" as Network2
+() "Network" as Network3
+
+RelayServer - Network1
+RelayServer -[hidden]right- Network1
+CoreClient ..> Network1: "Routes traffic (if P2P fails)"
+WebClient ..> Network1: "Routes traffic"
+
+IDServer - Network2
+IDServer -[hidden]right- Network2
+CoreClient .> Network2 : "Registers & finds peer"
+WebClient .> Network2 : "Registers & finds peer"
+
+CoreClient - Network3
+CoreClient ..left-> Network3 : "Direct P2P Connection"
 
 Scrap .> Platforms : "Uses OS APIs"
 Enigo .> Platforms : "Uses OS APIs"
@@ -69,15 +85,5 @@ CoreClient ..> Clipboard
 
 IDServer ..> HbbCommon
 RelayServer ..> HbbCommon
-
-' Connection Flow
-CoreClient .> IDServer : "Registers & finds peer"
-CoreClient .> RelayServer : "Routes traffic (if P2P fails)"
-
-WebClient .> IDServer : "Registers & finds peer"
-WebClient .> RelayServer : "Routes traffic"
-
-' Peer-to-peer connection
-CoreClient ..left-> CoreClient : "Direct P2P Connection"
 
 @enduml
